@@ -1,0 +1,244 @@
+@model StudentServiceRequestSystem.Models.ServiceRequest
+
+@{
+    ViewData["Title"] = "Create Service Request";
+}
+
+<div class="create-page">
+
+    <div class="create-card">
+
+        <div class="create-heading">
+
+            <div class="create-icon">📝</div>
+
+            <div>
+                <h1>Create Service Request</h1>
+                <p>Fill in the details below to submit a new service request.</p>
+            </div>
+
+        </div>
+
+
+        <form asp-action="Create" method="post">
+
+            <div asp-validation-summary="ModelOnly"
+                 class="text-danger"></div>
+
+
+            <!-- STUDENT ID -->
+            <div class="request-field">
+
+                <div class="field-icon">👤</div>
+
+                <div class="field-input">
+
+                    <label asp-for="StudentId">Student ID</label>
+
+                    <input asp-for="StudentId"
+                           class="form-control"
+                           placeholder="Enter your student ID" />
+
+                    <span asp-validation-for="StudentId"
+                          class="text-danger"></span>
+
+                </div>
+
+            </div>
+
+
+            <!-- REQUEST TYPE -->
+            <div class="request-field">
+
+                <div class="field-icon">☷</div>
+
+                <div class="field-input">
+
+                    <label asp-for="RequestType">Request Type</label>
+
+                    <select asp-for="RequestType"
+                            class="form-control">
+
+                        <option value="">-- Select Request Type --</option>
+
+                        <option value="Exam Routine">
+                            Exam Routine
+                        </option>
+
+                        <option value="Transcript">
+                            Transcript
+                        </option>
+
+                        <option value="Certificate">
+                            Certificate
+                        </option>
+
+                        <option value="Course Registration">
+                            Course Registration
+                        </option>
+
+                        <option value="ID Card">
+                            ID Card
+                        </option>
+
+                        <option value="Other">
+                            Other
+                        </option>
+
+                    </select>
+
+                    <span asp-validation-for="RequestType"
+                          class="text-danger"></span>
+
+                </div>
+
+            </div>
+
+
+            <!-- DESCRIPTION -->
+            <div class="request-field">
+
+                <div class="field-icon">📄</div>
+
+                <div class="field-input">
+
+                    <label asp-for="Description">
+                        Description
+                    </label>
+
+                    <textarea asp-for="Description"
+                              class="form-control description-box"
+                              placeholder="Write your request details"></textarea>
+
+                    <span asp-validation-for="Description"
+                          class="text-danger"></span>
+
+                </div>
+
+            </div>
+
+
+            <!-- STATUS -->
+            <div class="request-field">
+
+                <div class="field-icon">⚙</div>
+
+                <div class="field-input">
+
+                    <label asp-for="Status">
+                        Status
+                    </label>
+
+                    <select asp-for="Status"
+                            class="form-control">
+
+                        <option value="Pending">
+                            Pending
+                        </option>
+
+                        <option value="In Progress">
+                            In Progress
+                        </option>
+
+                        <option value="Completed">
+                            Completed
+                        </option>
+
+                    </select>
+
+                    <span asp-validation-for="Status"
+                          class="text-danger"></span>
+
+                </div>
+
+            </div>
+
+
+            <!-- DATES -->
+
+            <div class="row">
+
+                <div class="col-md-6">
+
+                    <div class="request-field">
+
+                        <div class="field-icon">📅</div>
+
+                        <div class="field-input">
+
+                            <label asp-for="CreatedDate">
+                                Created Date
+                            </label>
+
+                            <input asp-for="CreatedDate"
+                                   class="form-control" />
+
+                            <span asp-validation-for="CreatedDate"
+                                  class="text-danger"></span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6">
+
+                    <div class="request-field">
+
+                        <div class="field-icon">📅</div>
+
+                        <div class="field-input">
+
+                            <label asp-for="UpdatedDate">
+                                Updated Date
+                            </label>
+
+                            <input asp-for="UpdatedDate"
+                                   class="form-control" />
+
+                            <span asp-validation-for="UpdatedDate"
+                                  class="text-danger"></span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- BUTTONS -->
+
+            <div class="create-actions">
+
+                <a asp-action="Index"
+                   class="btn-back">
+                    ← Back to List
+                </a>
+
+                <button type="submit"
+                        class="btn-create">
+
+                    ✈ Create Request
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+@section Scripts {
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+}

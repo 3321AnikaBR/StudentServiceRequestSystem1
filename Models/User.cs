@@ -4,10 +4,15 @@ namespace StudentServiceRequestSystem.Models
 {
     public class User
     {
+        [Key]
         public int UserId { get; set; }
 
         [Required]
-        [StringLength(100)]
+        [Display(Name = "Student ID")]
+        public string StudentId { get; set; } = string.Empty;
+
+        [Required]
+        [Display(Name = "Full Name")]
         public string Name { get; set; } = string.Empty;
 
         [Required]

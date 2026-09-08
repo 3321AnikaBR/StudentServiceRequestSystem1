@@ -2,7 +2,118 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="full-page-bg home-bg">
+
+    <div class="home-wrapper">
+
+        <section class="home-hero">
+
+            <div>
+
+                <h1>IUBAT Student Service Request System</h1>
+
+                <p>
+                    Welcome to the student service portal.
+                    Submit your university service requests easily
+                    and track their status.
+                </p>
+
+                <div class="hero-buttons">
+
+                    <a asp-controller="ServiceRequests"
+                       asp-action="Create"
+                       class="btn btn-success btn-lg">
+                        Create Request
+                    </a>
+
+                    <a asp-controller="ServiceRequests"
+                       asp-action="Index"
+                       class="btn btn-light btn-lg">
+                        View Requests
+                    </a>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <section class="services-box">
+
+            <h2>Student Services</h2>
+
+            <p>
+                Our system helps students submit and manage university service requests.
+            </p>
+
+            <div class="row mt-4 g-4">
+
+                <div class="col-md-4">
+
+                    <div class="service-card">
+
+                        <h3>📝 Create Request</h3>
+
+                        <p>
+                            Submit a new service request to the university.
+                        </p>
+
+                        <a asp-controller="ServiceRequests"
+                           asp-action="Create"
+                           class="btn btn-success">
+                            Create
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-4">
+
+                    <div class="service-card">
+
+                        <h3>📋 My Requests</h3>
+
+                        <p>
+                            Check your submitted requests and current status.
+                        </p>
+
+                        <a asp-controller="ServiceRequests"
+                           asp-action="Index"
+                           class="btn btn-success">
+                            View Requests
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-4">
+
+                    <div class="service-card">
+
+                        <h3>🔐 Student Account</h3>
+
+                        <p>
+                            Login or create a student account.
+                        </p>
+
+                        <a href="#"
+                           class="btn btn-success">
+                            Login
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </div>
+
 </div>
