@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using StudentServiceRequestSystem.Data;
 using StudentServiceRequestSystem.Models;
 
-namespace StudentServiceRequestSystem.Controllers
+namespace StudentServiceRequestSystem1.Controllers
 {
     public class AccountController : Controller
     {
@@ -14,76 +14,66 @@ namespace StudentServiceRequestSystem.Controllers
             _context = context;
         }
 
-        // =========================
-        // REGISTER - GET
-        // =========================
+        // REGISTER PAGE
         [HttpGet]
         public IActionResult Register()
         {
             return View();
         }
 
-        // =========================
-        // REGISTER - POST
-        // =========================
+        // REGISTER POST
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(User user)
         {
-            if (string.IsNullOrWhiteSpace(user.Name) ||
-                string.IsNullOrWhiteSpace(user.Email) ||
-                string.IsNullOrWhiteSpace(user.Password))
+            if (!ModelState.IsValid)
             {
-                ViewBag.Error = "Please fill in all fields.";
                 return View(user);
             }
 
-            var existingUser = await _context.Users
-                .FirstOrDefaultAsync(u => u.Email == user.Email);
+            bool studentExists = await _context.Users
+                .AnyAsync(u => u.StudentId == user.StudentId);
 
-            if (existingUser != null)
+            if (studentExists)
+            {
+                ViewBag.Error = "This Student ID is already registered.";
+                return View(user);
+            }
+
+            bool emailExists = await _context.Users
+                .AnyAsync(u => u.Email == user.Email);
+
+            if (emailExists)
             {
                 ViewBag.Error = "This email is already registered.";
                 return View(user);
             }
 
-            // Default role
-            if (string.IsNullOrWhiteSpace(user.Role))
-            {
-                user.Role = "Student";
-            }
+            user.Role = "Student";
 
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
-            TempData["Success"] = "Registration successful. Please login.";
+            TempData["Success"] =
+                "Account created successfully. Please login.";
 
             return RedirectToAction("Login");
         }
 
-        // =========================
-        // LOGIN - GET
-        // =========================
+        // LOGIN PAGE
         [HttpGet]
         public IActionResult Login()
         {
             return View();
         }
 
-        // =========================
-        // LOGIN - POST
-        // =========================
+        // LOGIN POST
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(string email, string password)
+        public async Task<IActionResult> Login(
+            string email,
+            string password)
         {
-            if (string.IsNullOrWhiteSpace(email) ||
-                string.IsNullOrWhiteSpace(password))
-            {
-                ViewBag.Error = "Please enter email and password.";
-                return View();
-            }
-
             var user = await _context.Users
                 .FirstOrDefaultAsync(u =>
                     u.Email == email &&
@@ -95,18 +85,21 @@ namespace StudentServiceRequestSystem.Controllers
                 return View();
             }
 
-            // Save login information in Session
             HttpContext.Session.SetInt32("UserId", user.UserId);
-            HttpContext.Session.SetString("UserName", user.Name ?? "");
-            HttpContext.Session.SetString("UserEmail", user.Email ?? "");
-            HttpContext.Session.SetString("UserRole", user.Role ?? "Student");
+            HttpContext.Session.SetString("StudentId", user.StudentId);
+            HttpContext.Session.SetString("UserName", user.Name);
+            HttpContext.Session.SetString("Role", user.Role);
+
+            if (user.Role == "Staff")
+            {
+                return RedirectToAction("StaffDashboard");
+            }
 
             return RedirectToAction("Dashboard");
         }
 
-        // =========================
         // DASHBOARD
-        // =========================
+        [HttpGet]
         public IActionResult Dashboard()
         {
             if (HttpContext.Session.GetInt32("UserId") == null)
@@ -114,16 +107,59 @@ namespace StudentServiceRequestSystem.Controllers
                 return RedirectToAction("Login");
             }
 
-            ViewBag.UserName = HttpContext.Session.GetString("UserName");
-            ViewBag.UserEmail = HttpContext.Session.GetString("UserEmail");
-            ViewBag.UserRole = HttpContext.Session.GetString("UserRole");
+            ViewBag.UserName =
+                HttpContext.Session.GetString("UserName");
+
+            ViewBag.StudentId =
+                HttpContext.Session.GetString("StudentId");
 
             return View();
         }
+        // =====================================
+// STAFF DASHBOARD
+// =====================================
+public async Task<IActionResult> StaffDashboard()
+{
+    var userId =
+        HttpContext.Session.GetInt32("UserId");
 
-        // =========================
+    var role =
+        HttpContext.Session.GetString("Role");
+
+    if (userId == null)
+    {
+        return RedirectToAction("Login");
+    }
+
+    if (role != "Staff")
+    {
+        return RedirectToAction("Dashboard");
+    }
+
+    var requests =
+        await _context.ServiceRequests
+        .OrderByDescending(r => r.CreatedDate)
+        .ToListAsync();
+
+    ViewBag.TotalRequests =
+        requests.Count;
+
+    ViewBag.PendingRequests =
+        requests.Count(r => r.Status == "Pending");
+
+    ViewBag.InProgressRequests =
+        requests.Count(r => r.Status == "In Progress");
+
+    ViewBag.CompletedRequests =
+        requests.Count(r => r.Status == "Completed");
+
+    ViewBag.UserName =
+        HttpContext.Session.GetString("UserName");
+
+    return View(requests);
+}
+
         // LOGOUT
-        // =========================
         public IActionResult Logout()
         {
             HttpContext.Session.Clear();

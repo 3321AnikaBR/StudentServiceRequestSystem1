@@ -1,0 +1,67 @@
+﻿@{
+    ViewData["Title"] = "Login";
+}
+
+<div class="full-page-bg login-bg">
+    <div class="account-card">
+
+        <div class="text-center mb-4">
+            <img src="~/images/iubat-logo.png"
+                 class="login-logo"
+                 alt="IUBAT Logo" />
+
+            <h2>Student Login</h2>
+            <p class="text-muted">
+                IUBAT Student Service Request System
+            </p>
+        </div>
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success">
+                @TempData["Success"]
+            </div>
+        }
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger">
+                @ViewBag.Error
+            </div>
+        }
+
+        <form asp-action="Login" method="post">
+
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+
+                <input name="email"
+                       type="email"
+                       class="form-control"
+                       placeholder="Enter your email"
+                       required />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Password</label>
+
+                <input name="password"
+                       type="password"
+                       class="form-control"
+                       placeholder="Enter your password"
+                       required />
+            </div>
+
+            <button type="submit"
+                    class="btn btn-success w-100">
+                Login
+            </button>
+        </form>
+
+        <div class="text-center mt-3">
+            New student?
+            <a asp-action="Register">Register Here</a>
+        </div>
+
+    </div>
+</div>

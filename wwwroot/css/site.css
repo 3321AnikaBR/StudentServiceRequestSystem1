@@ -645,3 +645,361 @@ main {
         max-width: 280px;
         white-space: normal;
     }
+.account-card {
+    width: 100%;
+    max-width: 480px;
+    background: rgba(255,255,255,0.96);
+    padding: 38px;
+    border-radius: 20px;
+    box-shadow: 0 18px 45px rgba(0,0,0,0.35);
+}
+
+    .account-card h2 {
+        color: #075b39;
+        font-weight: 700;
+    }
+
+.login-logo {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+}
+
+.dashboard-page {
+    min-height: calc(100vh - 145px);
+    background-image: linear-gradient( rgba(0,45,30,0.50), rgba(0,30,20,0.65) ), url('/images/home-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    padding: 50px 25px;
+}
+
+.dashboard-container {
+    max-width: 1100px;
+    margin: auto;
+}
+
+.dashboard-welcome {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0,100,62,0.90);
+    color: white;
+    padding: 30px;
+    border-radius: 18px;
+}
+
+.dashboard-actions {
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 22px;
+    margin-top: 25px;
+}
+
+.dashboard-action-card {
+    background: rgba(255,255,255,0.96);
+    padding: 35px 20px;
+    border-radius: 18px;
+    text-decoration: none;
+    text-align: center;
+    color: #222;
+    border-top: 5px solid #087443;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+}
+
+    .dashboard-action-card h3 {
+        color: #075b39;
+        font-weight: 700;
+    }
+
+.action-icon {
+    font-size: 40px;
+}
+/* ==================================================
+   ATTRACTIVE REGISTER PAGE
+   ================================================== */
+
+.register-page {
+    min-height: calc(100vh - 145px);
+    width: 100%;
+    background-image: linear-gradient( rgba(0, 45, 30, 0.52), rgba(0, 30, 20, 0.68) ), url('/images/register-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 55px 20px;
+}
+
+
+.register-card {
+    width: 100%;
+    max-width: 520px;
+    background: rgba(255, 255, 255, 0.96);
+    border-radius: 24px;
+    padding: 38px 42px;
+    box-shadow: 0 20px 55px rgba(0, 0, 0, 0.40);
+    border: 1px solid rgba(255, 255, 255, 0.40);
+    backdrop-filter: blur(7px);
+}
+
+
+.register-logo-wrap {
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+
+.register-logo {
+    width: 85px;
+    height: 85px;
+    object-fit: contain;
+}
+
+
+.register-heading {
+    text-align: center;
+    margin-bottom: 28px;
+}
+
+
+    .register-heading h1 {
+        color: #075b39;
+        font-size: 30px;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+
+    .register-heading p {
+        color: #666;
+        font-size: 14px;
+        line-height: 1.5;
+        margin: 0;
+    }
+
+
+.register-field {
+    margin-bottom: 18px;
+}
+
+
+    .register-field label {
+        display: block;
+        font-weight: 600;
+        color: #222;
+        margin-bottom: 7px;
+    }
+
+
+.register-input-wrap {
+    position: relative;
+}
+
+
+.register-field-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    font-size: 17px;
+}
+
+
+.register-input-wrap .form-control {
+    min-height: 48px;
+    padding-left: 45px;
+    border-radius: 10px;
+    border: 1px solid #cfd9d4;
+    background-color: #fff;
+    transition: 0.2s;
+}
+
+
+    .register-input-wrap .form-control:focus {
+        border-color: #087443;
+        box-shadow: 0 0 0 0.2rem rgba(8, 116, 67, 0.15);
+    }
+
+
+.register-submit-btn {
+    width: 100%;
+    border: none;
+    background: linear-gradient( 135deg, #087443, #0a9254 );
+    color: white;
+    padding: 13px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    margin-top: 8px;
+    box-shadow: 0 7px 18px rgba(8, 116, 67, 0.25);
+    transition: 0.25s;
+}
+
+
+    .register-submit-btn:hover {
+        transform: translateY(-2px);
+        background: linear-gradient( 135deg, #05623a, #087443 );
+    }
+
+
+.register-login-link {
+    text-align: center;
+    margin-top: 18px;
+    color: #555;
+}
+
+
+    .register-login-link a {
+        color: #087443;
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+
+        .register-login-link a:hover {
+            text-decoration: underline;
+        }
+
+
+/* MOBILE */
+
+@media (max-width: 576px) {
+
+    .register-page {
+        padding: 25px 12px;
+    }
+
+    .register-card {
+        padding: 28px 20px;
+    }
+
+    .register-heading h1 {
+        font-size: 25px;
+    }
+}
+/* ===========================================
+   STAFF DASHBOARD
+   =========================================== */
+
+.staff-dashboard-page {
+    min-height: calc(100vh - 145px);
+    background-image: linear-gradient( rgba(0, 45, 30, 0.55), rgba(0, 30, 20, 0.70) ), url('/images/requests-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    padding: 45px 25px;
+}
+
+
+.staff-container {
+    max-width: 1200px;
+    margin: auto;
+}
+
+
+.staff-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(0, 100, 62, 0.92);
+    color: white;
+    padding: 28px 32px;
+    border-radius: 18px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.28);
+}
+
+
+    .staff-header h1 {
+        margin: 0;
+        font-weight: 700;
+    }
+
+
+    .staff-header p {
+        margin: 5px 0 0;
+    }
+
+
+.staff-stat-card {
+    background: rgba(255, 255, 255, 0.96);
+    padding: 25px;
+    border-radius: 16px;
+    text-align: center;
+    border-top: 5px solid #087443;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.23);
+}
+
+
+    .staff-stat-card h2 {
+        color: #087443;
+        font-size: 35px;
+        font-weight: 700;
+    }
+
+
+    .staff-stat-card p {
+        margin: 0;
+        font-weight: 600;
+        color: #555;
+    }
+
+
+.staff-request-panel {
+    margin-top: 30px;
+    background: rgba(255, 255, 255, 0.97);
+    padding: 32px;
+    border-radius: 20px;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.30);
+}
+
+
+.staff-panel-heading h2 {
+    color: #075b39;
+    font-weight: 700;
+}
+
+
+.staff-table thead {
+    background: #dceee5;
+}
+
+
+.staff-table th {
+    color: #075b39;
+}
+
+
+.status-card {
+    width: 100%;
+    max-width: 600px;
+    background: rgba(255, 255, 255, 0.97);
+    border-radius: 20px;
+    padding: 38px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.32);
+}
+
+
+    .status-card h2 {
+        color: #075b39;
+        font-weight: 700;
+    }
+
+
+.status-request-info {
+    background: #edf5f1;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 25px;
+}
+
+
+@media(max-width: 768px) {
+
+    .staff-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 15px;
+    }
+}

@@ -1,150 +1,549 @@
-
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using StudentServiceRequestSystem.Models;
 using StudentServiceRequestSystem.Data;
+using StudentServiceRequestSystem.Models;
 
-public class ServiceRequestsController : Controller
+namespace StudentServiceRequestSystem1.Controllers
 {
-    private readonly ApplicationDbContext _context;
-
-    public ServiceRequestsController(ApplicationDbContext context)
+    public class ServiceRequestsController : Controller
     {
-        _context = context;
-    }
+        private readonly ApplicationDbContext _context;
 
-    // GET: SERVICEREQUESTS
-    public async Task<IActionResult> Index()    
-    {
-        return View(await _context.ServiceRequests.ToListAsync());
-    }
-
-    // GET: SERVICEREQUESTS/Details/5
-    public async Task<IActionResult> Details(int? requestid)
-    {
-        if (requestid == null)
+        public ServiceRequestsController(ApplicationDbContext context)
         {
-            return NotFound();
+            _context = context;
         }
 
-        var servicerequest = await _context.ServiceRequests
-            .FirstOrDefaultAsync(m => m.RequestId == requestid);
-        if (servicerequest == null)
+
+        // ==========================================
+        // GET LOGGED-IN STUDENT ID
+        // ==========================================
+        private int? GetLoggedInStudentId()
         {
-            return NotFound();
-        }
+            string? studentIdString =
+                HttpContext.Session.GetString("StudentId");
 
-        return View(servicerequest);
-    }
-
-    // GET: SERVICEREQUESTS/Create
-    public IActionResult Create()
-    {
-        return View();
-    }
-
-    // POST: SERVICEREQUESTS/Create
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("RequestId,StudentId,RequestType,Description,Status,CreatedDate,UpdatedDate")] ServiceRequest servicerequest)
-    {
-        if (ModelState.IsValid)
-        {
-            _context.Add(servicerequest);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-        return View(servicerequest);
-    }
-
-    // GET: SERVICEREQUESTS/Edit/5
-    public async Task<IActionResult> Edit(int? requestid)
-    {
-        if (requestid == null)
-        {
-            return NotFound();
-        }
-
-        var servicerequest = await _context.ServiceRequests.FindAsync(requestid);
-        if (servicerequest == null)
-        {
-            return NotFound();
-        }
-        return View(servicerequest);
-    }
-
-    // POST: SERVICEREQUESTS/Edit/5
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int? requestid, [Bind("RequestId,StudentId,RequestType,Description,Status,CreatedDate,UpdatedDate")] ServiceRequest servicerequest)
-    {
-        if (requestid != servicerequest.RequestId)
-        {
-            return NotFound();
-        }
-
-        if (ModelState.IsValid)
-        {
-            try
+            if (string.IsNullOrWhiteSpace(studentIdString))
             {
-                _context.Update(servicerequest);
-                await _context.SaveChangesAsync();
+                return null;
             }
-            catch (DbUpdateConcurrencyException)
+
+            if (int.TryParse(studentIdString, out int studentId))
             {
-                if (!ServiceRequestExists(servicerequest.RequestId))
+                return studentId;
+            }
+
+            return null;
+        }
+
+
+        // ==========================================
+        // INDEX
+        // Student = Own Requests
+        // Staff = All Requests
+        // ==========================================
+        public async Task<IActionResult> Index()
+        {
+            var userId =
+                HttpContext.Session.GetInt32("UserId");
+
+            if (userId == null)
+            {
+                return RedirectToAction(
+                    "Login",
+                    "Account");
+            }
+
+            string? role =
+                HttpContext.Session.GetString("Role");
+
+            if (role == "Staff")
+            {
+                var allRequests =
+                    await _context.ServiceRequests
+                    .OrderByDescending(r => r.CreatedDate)
+                    .ToListAsync();
+
+                return View(allRequests);
+            }
+
+            int? studentId =
+                GetLoggedInStudentId();
+
+            if (studentId == null)
+            {
+                TempData["Error"] =
+                    "Invalid Student ID. Please login again.";
+
+                return RedirectToAction(
+                    "Dashboard",
+                    "Account");
+            }
+
+            var myRequests =
+                await _context.ServiceRequests
+                .Where(r => r.StudentId == studentId.Value)
+                .OrderByDescending(r => r.CreatedDate)
+                .ToListAsync();
+
+            return View(myRequests);
+        }
+
+
+        // ==========================================
+        // DETAILS
+        // ==========================================
+        public async Task<IActionResult> Details(
+            int? requestId)
+        {
+            if (requestId == null)
+            {
+                return NotFound();
+            }
+
+            var request =
+                await _context.ServiceRequests
+                .FirstOrDefaultAsync(
+                    r => r.RequestId == requestId);
+
+            if (request == null)
+            {
+                return NotFound();
+            }
+
+            string? role =
+                HttpContext.Session.GetString("Role");
+
+            if (role != "Staff")
+            {
+                int? studentId =
+                    GetLoggedInStudentId();
+
+                if (studentId == null ||
+                    request.StudentId != studentId.Value)
                 {
-                    return NotFound();
+                    return RedirectToAction("Index");
                 }
-                else
+            }
+
+            return View(request);
+        }
+
+
+        // ==========================================
+        // CREATE GET
+        // ==========================================
+        [HttpGet]
+        public IActionResult Create()
+        {
+            var userId =
+                HttpContext.Session.GetInt32("UserId");
+
+            if (userId == null)
+            {
+                return RedirectToAction(
+                    "Login",
+                    "Account");
+            }
+
+            int? studentId =
+                GetLoggedInStudentId();
+
+            if (studentId == null)
+            {
+                TempData["Error"] =
+                    "Your Student ID must contain numbers only.";
+
+                return RedirectToAction(
+                    "Dashboard",
+                    "Account");
+            }
+
+            var request =
+                new ServiceRequest
                 {
+                    StudentId = studentId.Value,
+                    Status = "Pending",
+                    CreatedDate = DateTime.Now,
+                    UpdatedDate = DateTime.Now
+                };
+
+            return View(request);
+        }
+
+
+        // ==========================================
+        // CREATE POST
+        // ==========================================
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(
+            ServiceRequest serviceRequest)
+        {
+            var userId =
+                HttpContext.Session.GetInt32("UserId");
+
+            if (userId == null)
+            {
+                return RedirectToAction(
+                    "Login",
+                    "Account");
+            }
+
+            int? studentId =
+                GetLoggedInStudentId();
+
+            if (studentId == null)
+            {
+                TempData["Error"] =
+                    "Invalid Student ID.";
+
+                return RedirectToAction(
+                    "Dashboard",
+                    "Account");
+            }
+
+            serviceRequest.StudentId =
+                studentId.Value;
+
+            serviceRequest.Status =
+                "Pending";
+
+            serviceRequest.CreatedDate =
+                DateTime.Now;
+
+            serviceRequest.UpdatedDate =
+                DateTime.Now;
+
+
+            ModelState.Remove("StudentId");
+            ModelState.Remove("Status");
+            ModelState.Remove("CreatedDate");
+            ModelState.Remove("UpdatedDate");
+
+
+            if (ModelState.IsValid)
+            {
+                _context.ServiceRequests
+                    .Add(serviceRequest);
+
+                await _context.SaveChangesAsync();
+
+                TempData["Success"] =
+                    "Service request submitted successfully.";
+
+                return RedirectToAction(
+                    nameof(Index));
+            }
+
+            return View(serviceRequest);
+        }
+
+
+        // ==========================================
+        // EDIT GET
+        // ==========================================
+        [HttpGet]
+        public async Task<IActionResult> Edit(
+            int? requestId)
+        {
+            if (requestId == null)
+            {
+                return NotFound();
+            }
+
+            var serviceRequest =
+                await _context.ServiceRequests
+                .FindAsync(requestId);
+
+            if (serviceRequest == null)
+            {
+                return NotFound();
+            }
+
+            string? role =
+                HttpContext.Session.GetString("Role");
+
+            if (role != "Staff")
+            {
+                int? studentId =
+                    GetLoggedInStudentId();
+
+                if (studentId == null ||
+                    serviceRequest.StudentId != studentId.Value)
+                {
+                    return RedirectToAction("Index");
+                }
+            }
+
+            return View(serviceRequest);
+        }
+
+
+        // ==========================================
+        // EDIT POST
+        // ==========================================
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(
+            int requestId,
+            ServiceRequest serviceRequest)
+        {
+            if (requestId != serviceRequest.RequestId)
+            {
+                return NotFound();
+            }
+
+            var existingRequest =
+                await _context.ServiceRequests
+                .AsNoTracking()
+                .FirstOrDefaultAsync(
+                    r => r.RequestId == requestId);
+
+            if (existingRequest == null)
+            {
+                return NotFound();
+            }
+
+            string? role =
+                HttpContext.Session.GetString("Role");
+
+            if (role != "Staff")
+            {
+                int? studentId =
+                    GetLoggedInStudentId();
+
+                if (studentId == null ||
+                    existingRequest.StudentId != studentId.Value)
+                {
+                    return RedirectToAction("Index");
+                }
+            }
+
+            serviceRequest.StudentId =
+                existingRequest.StudentId;
+
+            serviceRequest.CreatedDate =
+                existingRequest.CreatedDate;
+
+            serviceRequest.UpdatedDate =
+                DateTime.Now;
+
+            // Student cannot change status
+            if (role != "Staff")
+            {
+                serviceRequest.Status =
+                    existingRequest.Status;
+            }
+
+
+            ModelState.Remove("StudentId");
+            ModelState.Remove("CreatedDate");
+            ModelState.Remove("UpdatedDate");
+
+            if (role != "Staff")
+            {
+                ModelState.Remove("Status");
+            }
+
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(
+                        serviceRequest);
+
+                    await _context
+                        .SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!ServiceRequestExists(
+                        serviceRequest.RequestId))
+                    {
+                        return NotFound();
+                    }
+
                     throw;
                 }
+
+                return RedirectToAction(
+                    nameof(Index));
             }
-            return RedirectToAction(nameof(Index));
-        }
-        return View(servicerequest);
-    }
 
-    // GET: SERVICEREQUESTS/Delete/5
-    public async Task<IActionResult> Delete(int? requestid)
-    {
-        if (requestid == null)
+            return View(serviceRequest);
+        }
+
+
+        // ==========================================
+        // DELETE GET
+        // ==========================================
+        [HttpGet]
+        public async Task<IActionResult> Delete(
+            int? requestId)
         {
-            return NotFound();
+            if (requestId == null)
+            {
+                return NotFound();
+            }
+
+            var serviceRequest =
+                await _context.ServiceRequests
+                .FirstOrDefaultAsync(
+                    r => r.RequestId == requestId);
+
+            if (serviceRequest == null)
+            {
+                return NotFound();
+            }
+
+            string? role =
+                HttpContext.Session.GetString("Role");
+
+            if (role != "Staff")
+            {
+                int? studentId =
+                    GetLoggedInStudentId();
+
+                if (studentId == null ||
+                    serviceRequest.StudentId != studentId.Value)
+                {
+                    return RedirectToAction("Index");
+                }
+            }
+
+            return View(serviceRequest);
         }
 
-        var servicerequest = await _context.ServiceRequests
-            .FirstOrDefaultAsync(m => m.RequestId == requestid);
-        if (servicerequest == null)
+
+        // ==========================================
+        // DELETE POST
+        // ==========================================
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult>
+            DeleteConfirmed(int requestId)
         {
-            return NotFound();
+            var serviceRequest =
+                await _context.ServiceRequests
+                .FindAsync(requestId);
+
+            if (serviceRequest == null)
+            {
+                return RedirectToAction(
+                    nameof(Index));
+            }
+
+            string? role =
+                HttpContext.Session.GetString("Role");
+
+            if (role != "Staff")
+            {
+                int? studentId =
+                    GetLoggedInStudentId();
+
+                if (studentId == null ||
+                    serviceRequest.StudentId != studentId.Value)
+                {
+                    return RedirectToAction("Index");
+                }
+            }
+
+            _context.ServiceRequests
+                .Remove(serviceRequest);
+
+            await _context
+                .SaveChangesAsync();
+
+            return RedirectToAction(
+                nameof(Index));
         }
 
-        return View(servicerequest);
-    }
 
-    // POST: SERVICEREQUESTS/Delete/5
-    [HttpPost, ActionName("Delete")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(int? requestid)
-    {
-        var servicerequest = await _context.ServiceRequests.FindAsync(requestid);
-        if (servicerequest != null)
+        // ==========================================
+        // STAFF UPDATE STATUS GET
+        // ==========================================
+        [HttpGet]
+        public async Task<IActionResult> UpdateStatus(
+            int requestId)
         {
-            _context.ServiceRequests.Remove(servicerequest);
+            string? role =
+                HttpContext.Session.GetString("Role");
+
+            if (role != "Staff")
+            {
+                return RedirectToAction(
+                    "Login",
+                    "Account");
+            }
+
+            var request =
+                await _context.ServiceRequests
+                .FindAsync(requestId);
+
+            if (request == null)
+            {
+                return NotFound();
+            }
+
+            return View(request);
         }
 
-        await _context.SaveChangesAsync();
-        return RedirectToAction(nameof(Index));
-    }
 
-    private bool ServiceRequestExists(int? requestid)
-    {
-        return _context.ServiceRequests.Any(e => e.RequestId == requestid);
+        // ==========================================
+        // STAFF UPDATE STATUS POST
+        // ==========================================
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateStatus(
+            int requestId,
+            string status)
+        {
+            string? role =
+                HttpContext.Session.GetString("Role");
+
+            if (role != "Staff")
+            {
+                return RedirectToAction(
+                    "Login",
+                    "Account");
+            }
+
+            var request =
+                await _context.ServiceRequests
+                .FindAsync(requestId);
+
+            if (request == null)
+            {
+                return NotFound();
+            }
+
+            request.Status = status;
+
+            request.UpdatedDate =
+                DateTime.Now;
+
+            await _context
+                .SaveChangesAsync();
+
+            TempData["Success"] =
+                "Request status updated successfully.";
+
+            return RedirectToAction(
+                "StaffDashboard",
+                "Account");
+        }
+
+
+        // ==========================================
+        // EXISTS
+        // ==========================================
+        private bool ServiceRequestExists(
+            int id)
+        {
+            return _context.ServiceRequests
+                .Any(e => e.RequestId == id);
+        }
     }
 }

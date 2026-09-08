@@ -1,0 +1,65 @@
+﻿@{
+    ViewData["Title"] = "Student Dashboard";
+}
+
+<div class="dashboard-page">
+
+    <div class="dashboard-container">
+
+        <div class="dashboard-welcome">
+
+            <div>
+                <h1>Welcome, @ViewBag.UserName</h1>
+                <p>Student ID: @ViewBag.StudentId</p>
+            </div>
+
+            <a asp-controller="Account"
+               asp-action="Logout"
+               class="btn btn-light">
+                Logout
+            </a>
+
+        </div>
+
+        <div class="dashboard-actions">
+
+            <a asp-controller="ServiceRequests"
+               asp-action="Create"
+               class="dashboard-action-card">
+
+                <div class="action-icon">📝</div>
+
+                <h3>Create Request</h3>
+
+                <p>Submit a new service request.</p>
+
+            </a>
+
+            <a asp-controller="ServiceRequests"
+               asp-action="Index"
+               class="dashboard-action-card">
+
+                <div class="action-icon">📋</div>
+
+                <h3>My Requests</h3>
+
+                <p>View your submitted requests.</p>
+
+            </a>
+
+            <a asp-controller="Home"
+               asp-action="Index"
+               class="dashboard-action-card">
+
+                <div class="action-icon">🏠</div>
+
+                <h3>Home</h3>
+
+                <p>Return to the main page.</p>
+
+            </a>
+
+        </div>
+
+    </div>
+</div>

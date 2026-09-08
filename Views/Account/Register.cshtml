@@ -1,0 +1,146 @@
+﻿@model StudentServiceRequestSystem.Models.User
+
+@{
+    ViewData["Title"] = "Register";
+}
+
+<div class="register-page">
+
+    <div class="register-card">
+
+        <div class="register-logo-wrap">
+            <img src="~/images/iubat-logo.png"
+                 alt="IUBAT Logo"
+                 class="register-logo" />
+        </div>
+
+        <div class="register-heading">
+            <h1>Create Student Account</h1>
+
+            <p>
+                Join the IUBAT Student Service Request System
+                to submit and track your service requests.
+            </p>
+        </div>
+
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger">
+                @ViewBag.Error
+            </div>
+        }
+
+
+        <form asp-action="Register" method="post">
+
+            <div asp-validation-summary="ModelOnly"
+                 class="text-danger mb-3">
+            </div>
+
+
+            <div class="register-field">
+                <label asp-for="StudentId">
+                    Student ID
+                </label>
+
+                <div class="register-input-wrap">
+                    <span class="register-field-icon">🎓</span>
+
+                    <input asp-for="StudentId"
+                           class="form-control"
+                           placeholder="Enter your Student ID" />
+                </div>
+
+                <span asp-validation-for="StudentId"
+                      class="text-danger">
+                </span>
+            </div>
+
+
+            <div class="register-field">
+                <label asp-for="Name">
+                    Full Name
+                </label>
+
+                <div class="register-input-wrap">
+                    <span class="register-field-icon">👤</span>
+
+                    <input asp-for="Name"
+                           class="form-control"
+                           placeholder="Enter your full name" />
+                </div>
+
+                <span asp-validation-for="Name"
+                      class="text-danger">
+                </span>
+            </div>
+
+
+            <div class="register-field">
+                <label asp-for="Email">
+                    Email
+                </label>
+
+                <div class="register-input-wrap">
+                    <span class="register-field-icon">✉️</span>
+
+                    <input asp-for="Email"
+                           class="form-control"
+                           placeholder="Enter your IUBAT email" />
+                </div>
+
+                <span asp-validation-for="Email"
+                      class="text-danger">
+                </span>
+            </div>
+
+
+            <div class="register-field">
+                <label asp-for="Password">
+                    Password
+                </label>
+
+                <div class="register-input-wrap">
+                    <span class="register-field-icon">🔒</span>
+
+                    <input asp-for="Password"
+                           class="form-control"
+                           placeholder="Enter password" />
+                </div>
+
+                <span asp-validation-for="Password"
+                      class="text-danger">
+                </span>
+            </div>
+
+
+            <button type="submit"
+                    class="register-submit-btn">
+                Create Account
+            </button>
+
+
+            <div class="register-login-link">
+
+                Already registered?
+
+                <a asp-controller="Account"
+                   asp-action="Login">
+                    Login Here
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

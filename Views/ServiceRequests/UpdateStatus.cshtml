@@ -1,0 +1,104 @@
+﻿@model StudentServiceRequestSystem.Models.ServiceRequest
+
+@{
+    ViewData["Title"] = "Update Status";
+}
+
+<div class="full-page-bg edit-bg">
+
+    <div class="status-card">
+
+        <div class="text-center mb-4">
+
+            <h2>Update Request Status</h2>
+
+            <p>
+                Change the current status of this student request.
+            </p>
+
+        </div>
+
+
+        <div class="status-request-info">
+
+            <p>
+                <strong>Student ID:</strong>
+                @Model.StudentId
+            </p>
+
+            <p>
+                <strong>Request Type:</strong>
+                @Model.RequestType
+            </p>
+
+            <p>
+                <strong>Description:</strong>
+                @Model.Description
+            </p>
+
+            <p>
+                <strong>Current Status:</strong>
+                @Model.Status
+            </p>
+
+        </div>
+
+
+        <form asp-action="UpdateStatus"
+              method="post">
+
+            <input type="hidden"
+                   name="requestId"
+                   value="@Model.RequestId" />
+
+
+            <div class="mb-4">
+
+                <label class="form-label">
+                    New Status
+                </label>
+
+                <select name="status"
+                        class="form-control">
+
+                    <option value="Pending">
+                        Pending
+                    </option>
+
+                    <option value="In Progress">
+                        In Progress
+                    </option>
+
+                    <option value="Completed">
+                        Completed
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="d-flex justify-content-between">
+
+                <a asp-controller="Account"
+                   asp-action="StaffDashboard"
+                   class="btn btn-outline-secondary">
+
+                    Back
+
+                </a>
+
+                <button type="submit"
+                        class="btn btn-success">
+
+                    Save Status
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
