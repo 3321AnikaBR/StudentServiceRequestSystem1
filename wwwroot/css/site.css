@@ -1003,3 +1003,113 @@ main {
         gap: 15px;
     }
 }
+/* ================================
+   STAFF DASHBOARD
+   ================================ */
+
+.staff-page {
+    min-height: calc(100vh - 145px);
+    background-image: linear-gradient( rgba(0, 45, 30, 0.55), rgba(0, 30, 20, 0.72) ), url('/images/requests-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    padding: 45px 25px;
+}
+
+.staff-wrapper {
+    max-width: 1200px;
+    margin: auto;
+}
+
+.staff-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0, 105, 64, 0.92);
+    color: white;
+    padding: 28px 32px;
+    border-radius: 18px;
+}
+
+    .staff-top h1 {
+        font-weight: 700;
+    }
+
+.staff-stat {
+    background: rgba(255,255,255,0.96);
+    text-align: center;
+    padding: 22px 12px;
+    border-radius: 15px;
+    border-top: 5px solid #087443;
+}
+
+    .staff-stat h2 {
+        color: #087443;
+        font-weight: 700;
+    }
+
+.staff-table-card {
+    margin-top: 25px;
+    background: rgba(255,255,255,0.97);
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 12px 35px rgba(0,0,0,0.30);
+}
+
+    .staff-table-card h2 {
+        color: #075b39;
+        font-weight: 700;
+    }
+
+
+/* ================================
+   REQUEST DETAILS
+   ================================ */
+
+.request-details-page {
+    min-height: calc(100vh - 145px);
+    background-image: linear-gradient( rgba(0,45,30,0.50), rgba(0,30,20,0.68) ), url('/images/details-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 45px 20px;
+}
+
+.details-card {
+    width: 100%;
+    max-width: 720px;
+    background: rgba(255,255,255,0.97);
+    padding: 38px;
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.35);
+}
+
+    .details-card h1 {
+        color: #075b39;
+        font-weight: 700;
+    }
+
+.details-subtitle {
+    color: #666;
+    margin-bottom: 25px;
+}
+
+.details-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 13px 0;
+    border-bottom: 1px solid #ddd;
+}
+
+.status-update-box {
+    background: #eaf4ef;
+    margin-top: 25px;
+    padding: 22px;
+    border-radius: 13px;
+}
+
+    .status-update-box h3 {
+        color: #075b39;
+        font-weight: 700;
+    }

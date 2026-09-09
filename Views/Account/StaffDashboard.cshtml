@@ -4,11 +4,11 @@
     ViewData["Title"] = "Staff Dashboard";
 }
 
-<div class="staff-dashboard-page">
+<div class="staff-page">
 
-    <div class="staff-container">
+    <div class="staff-wrapper">
 
-        <div class="staff-header">
+        <div class="staff-top">
 
             <div>
                 <h1>Staff Dashboard</h1>
@@ -21,93 +21,66 @@
             <a asp-controller="Account"
                asp-action="Logout"
                class="btn btn-light">
-
                 Logout
-
             </a>
 
         </div>
 
 
-        <div class="row g-4 mt-2">
+        <div class="row g-3 mt-2">
 
-            <div class="col-md-3">
-                <div class="staff-stat-card">
-
-                    <h2>@ViewBag.TotalRequests</h2>
-
+            <div class="col-md">
+                <div class="staff-stat">
+                    <h2>@ViewBag.Total</h2>
                     <p>Total Requests</p>
-
                 </div>
             </div>
 
-
-            <div class="col-md-3">
-                <div class="staff-stat-card">
-
-                    <h2>@ViewBag.PendingRequests</h2>
-
+            <div class="col-md">
+                <div class="staff-stat">
+                    <h2>@ViewBag.Pending</h2>
                     <p>Pending</p>
-
                 </div>
             </div>
 
-
-            <div class="col-md-3">
-                <div class="staff-stat-card">
-
-                    <h2>@ViewBag.InProgressRequests</h2>
-
-                    <p>In Progress</p>
-
+            <div class="col-md">
+                <div class="staff-stat">
+                    <h2>@ViewBag.Processing</h2>
+                    <p>Processing</p>
                 </div>
             </div>
 
-
-            <div class="col-md-3">
-                <div class="staff-stat-card">
-
-                    <h2>@ViewBag.CompletedRequests</h2>
-
+            <div class="col-md">
+                <div class="staff-stat">
+                    <h2>@ViewBag.Completed</h2>
                     <p>Completed</p>
+                </div>
+            </div>
 
+            <div class="col-md">
+                <div class="staff-stat">
+                    <h2>@ViewBag.Rejected</h2>
+                    <p>Rejected</p>
                 </div>
             </div>
 
         </div>
 
 
-        <div class="staff-request-panel">
+        <div class="staff-table-card">
 
-            <div class="staff-panel-heading">
+            <h2>Submitted Student Requests</h2>
 
-                <div>
-                    <h2>Student Service Requests</h2>
-
-                    <p>
-                        Review requests and update their current status.
-                    </p>
-                </div>
-
-            </div>
-
-
-            @if (TempData["Success"] != null)
-            {
-                <div class="alert alert-success">
-
-                    @TempData["Success"]
-
-                </div>
-            }
-
+            <p>
+                Open a request to review its details
+                and update the current status.
+            </p>
 
             <div class="table-responsive">
 
-                <table class="table staff-table">
+                <table class="table table-hover">
 
                     <thead>
-
                         <tr>
                             <th>Student ID</th>
                             <th>Request Type</th>
@@ -116,7 +89,6 @@
                             <th>Created</th>
                             <th>Action</th>
                         </tr>
-
                     </thead>
 
                     <tbody>
@@ -132,26 +104,7 @@
                                 <td>@item.Description</td>
 
                                 <td>
-
-                                    @if (item.Status == "Completed")
-                                    {
-                                        <span class="badge bg-success">
-                                            Completed
-                                        </span>
-                                    }
-                                    else if (item.Status == "In Progress")
-                                    {
-                                        <span class="badge bg-warning text-dark">
-                                            In Progress
-                                        </span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge bg-secondary">
-                                            Pending
-                                        </span>
-                                    }
-
+                                    <strong>@item.Status</strong>
                                 </td>
 
                                 <td>
@@ -161,11 +114,11 @@
                                 <td>
 
                                     <a asp-controller="ServiceRequests"
-                                       asp-action="UpdateStatus"
+                                       asp-action="Details"
                                        asp-route-requestId="@item.RequestId"
-                                       class="btn btn-sm btn-success">
+                                       class="btn btn-success btn-sm">
 
-                                        Update Status
+                                        Open Details
 
                                     </a>
 

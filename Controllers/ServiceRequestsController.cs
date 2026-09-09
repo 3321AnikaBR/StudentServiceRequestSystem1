@@ -14,21 +14,12 @@ namespace StudentServiceRequestSystem1.Controllers
             _context = context;
         }
 
-
-        // ==========================================
-        // GET LOGGED-IN STUDENT ID
-        // ==========================================
-        private int? GetLoggedInStudentId()
+        // Get logged-in student's numeric ID
+        private int? GetStudentId()
         {
-            string? studentIdString =
-                HttpContext.Session.GetString("StudentId");
+            string? value = HttpContext.Session.GetString("StudentId");
 
-            if (string.IsNullOrWhiteSpace(studentIdString))
-            {
-                return null;
-            }
-
-            if (int.TryParse(studentIdString, out int studentId))
+            if (int.TryParse(value, out int studentId))
             {
                 return studentId;
             }
@@ -37,74 +28,56 @@ namespace StudentServiceRequestSystem1.Controllers
         }
 
 
-        // ==========================================
-        // INDEX
-        // Student = Own Requests
-        // Staff = All Requests
-        // ==========================================
+        // ===============================
+        // MY REQUESTS / ALL REQUESTS
+        // ===============================
         public async Task<IActionResult> Index()
         {
-            var userId =
-                HttpContext.Session.GetInt32("UserId");
-
-            if (userId == null)
+            if (HttpContext.Session.GetInt32("UserId") == null)
             {
-                return RedirectToAction(
-                    "Login",
-                    "Account");
+                return RedirectToAction("Login", "Account");
             }
 
             string? role =
                 HttpContext.Session.GetString("Role");
 
+            // Staff sees everything
             if (role == "Staff")
             {
-                var allRequests =
+                return View(
                     await _context.ServiceRequests
-                    .OrderByDescending(r => r.CreatedDate)
-                    .ToListAsync();
-
-                return View(allRequests);
+                    .OrderByDescending(x => x.CreatedDate)
+                    .ToListAsync());
             }
 
-            int? studentId =
-                GetLoggedInStudentId();
+            int? studentId = GetStudentId();
 
             if (studentId == null)
             {
-                TempData["Error"] =
-                    "Invalid Student ID. Please login again.";
-
-                return RedirectToAction(
-                    "Dashboard",
-                    "Account");
+                return RedirectToAction("Dashboard", "Account");
             }
 
-            var myRequests =
+            return View(
                 await _context.ServiceRequests
-                .Where(r => r.StudentId == studentId.Value)
-                .OrderByDescending(r => r.CreatedDate)
-                .ToListAsync();
-
-            return View(myRequests);
+                .Where(x => x.StudentId == studentId.Value)
+                .OrderByDescending(x => x.CreatedDate)
+                .ToListAsync());
         }
 
 
-        // ==========================================
+        // ===============================
         // DETAILS
-        // ==========================================
-        public async Task<IActionResult> Details(
-            int? requestId)
+        // ===============================
+        public async Task<IActionResult> Details(int? requestId)
         {
             if (requestId == null)
             {
                 return NotFound();
             }
 
-            var request =
-                await _context.ServiceRequests
-                .FirstOrDefaultAsync(
-                    r => r.RequestId == requestId);
+            var request = await _context.ServiceRequests
+                .FirstOrDefaultAsync(x =>
+                    x.RequestId == requestId);
 
             if (request == null)
             {
@@ -116,13 +89,12 @@ namespace StudentServiceRequestSystem1.Controllers
 
             if (role != "Staff")
             {
-                int? studentId =
-                    GetLoggedInStudentId();
+                int? studentId = GetStudentId();
 
                 if (studentId == null ||
                     request.StudentId != studentId.Value)
                 {
-                    return RedirectToAction("Index");
+                    return RedirectToAction(nameof(Index));
                 }
             }
 
@@ -130,77 +102,49 @@ namespace StudentServiceRequestSystem1.Controllers
         }
 
 
-        // ==========================================
+        // ===============================
         // CREATE GET
-        // ==========================================
+        // ===============================
         [HttpGet]
         public IActionResult Create()
         {
-            var userId =
-                HttpContext.Session.GetInt32("UserId");
-
-            if (userId == null)
+            if (HttpContext.Session.GetInt32("UserId") == null)
             {
-                return RedirectToAction(
-                    "Login",
-                    "Account");
+                return RedirectToAction("Login", "Account");
             }
 
-            int? studentId =
-                GetLoggedInStudentId();
+            int? studentId = GetStudentId();
 
             if (studentId == null)
             {
-                TempData["Error"] =
-                    "Your Student ID must contain numbers only.";
-
-                return RedirectToAction(
-                    "Dashboard",
-                    "Account");
+                return RedirectToAction("Dashboard", "Account");
             }
 
-            var request =
-                new ServiceRequest
-                {
-                    StudentId = studentId.Value,
-                    Status = "Pending",
-                    CreatedDate = DateTime.Now,
-                    UpdatedDate = DateTime.Now
-                };
+            ServiceRequest request = new ServiceRequest
+            {
+                StudentId = studentId.Value,
+                Status = "Pending",
+                CreatedDate = DateTime.Now,
+                UpdatedDate = DateTime.Now
+            };
 
             return View(request);
         }
 
 
-        // ==========================================
+        // ===============================
         // CREATE POST
-        // ==========================================
+        // ===============================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(
             ServiceRequest serviceRequest)
         {
-            var userId =
-                HttpContext.Session.GetInt32("UserId");
-
-            if (userId == null)
-            {
-                return RedirectToAction(
-                    "Login",
-                    "Account");
-            }
-
-            int? studentId =
-                GetLoggedInStudentId();
+            int? studentId = GetStudentId();
 
             if (studentId == null)
             {
-                TempData["Error"] =
-                    "Invalid Student ID.";
-
-                return RedirectToAction(
-                    "Dashboard",
-                    "Account");
+                return RedirectToAction("Login", "Account");
             }
 
             serviceRequest.StudentId =
@@ -215,34 +159,30 @@ namespace StudentServiceRequestSystem1.Controllers
             serviceRequest.UpdatedDate =
                 DateTime.Now;
 
-
             ModelState.Remove("StudentId");
             ModelState.Remove("Status");
             ModelState.Remove("CreatedDate");
             ModelState.Remove("UpdatedDate");
 
-
             if (ModelState.IsValid)
             {
-                _context.ServiceRequests
-                    .Add(serviceRequest);
+                _context.ServiceRequests.Add(serviceRequest);
 
                 await _context.SaveChangesAsync();
 
                 TempData["Success"] =
-                    "Service request submitted successfully.";
+                    "Request submitted successfully.";
 
-                return RedirectToAction(
-                    nameof(Index));
+                return RedirectToAction(nameof(Index));
             }
 
             return View(serviceRequest);
         }
 
 
-        // ==========================================
+        // ===============================
         // EDIT GET
-        // ==========================================
+        // ===============================
         [HttpGet]
         public async Task<IActionResult> Edit(
             int? requestId)
@@ -252,11 +192,11 @@ namespace StudentServiceRequestSystem1.Controllers
                 return NotFound();
             }
 
-            var serviceRequest =
+            var request =
                 await _context.ServiceRequests
                 .FindAsync(requestId);
 
-            if (serviceRequest == null)
+            if (request == null)
             {
                 return NotFound();
             }
@@ -266,23 +206,22 @@ namespace StudentServiceRequestSystem1.Controllers
 
             if (role != "Staff")
             {
-                int? studentId =
-                    GetLoggedInStudentId();
+                int? studentId = GetStudentId();
 
                 if (studentId == null ||
-                    serviceRequest.StudentId != studentId.Value)
+                    request.StudentId != studentId.Value)
                 {
-                    return RedirectToAction("Index");
+                    return RedirectToAction(nameof(Index));
                 }
             }
 
-            return View(serviceRequest);
+            return View(request);
         }
 
 
-        // ==========================================
+        // ===============================
         // EDIT POST
-        // ==========================================
+        // ===============================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(
@@ -294,13 +233,12 @@ namespace StudentServiceRequestSystem1.Controllers
                 return NotFound();
             }
 
-            var existingRequest =
-                await _context.ServiceRequests
+            var original = await _context.ServiceRequests
                 .AsNoTracking()
-                .FirstOrDefaultAsync(
-                    r => r.RequestId == requestId);
+                .FirstOrDefaultAsync(x =>
+                    x.RequestId == requestId);
 
-            if (existingRequest == null)
+            if (original == null)
             {
                 return NotFound();
             }
@@ -310,32 +248,27 @@ namespace StudentServiceRequestSystem1.Controllers
 
             if (role != "Staff")
             {
-                int? studentId =
-                    GetLoggedInStudentId();
+                int? studentId = GetStudentId();
 
                 if (studentId == null ||
-                    existingRequest.StudentId != studentId.Value)
+                    original.StudentId != studentId.Value)
                 {
-                    return RedirectToAction("Index");
+                    return RedirectToAction(nameof(Index));
                 }
+
+                // Student cannot change status
+                serviceRequest.Status =
+                    original.Status;
             }
 
             serviceRequest.StudentId =
-                existingRequest.StudentId;
+                original.StudentId;
 
             serviceRequest.CreatedDate =
-                existingRequest.CreatedDate;
+                original.CreatedDate;
 
             serviceRequest.UpdatedDate =
                 DateTime.Now;
-
-            // Student cannot change status
-            if (role != "Staff")
-            {
-                serviceRequest.Status =
-                    existingRequest.Status;
-            }
-
 
             ModelState.Remove("StudentId");
             ModelState.Remove("CreatedDate");
@@ -346,39 +279,22 @@ namespace StudentServiceRequestSystem1.Controllers
                 ModelState.Remove("Status");
             }
 
-
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(
-                        serviceRequest);
+                _context.Update(serviceRequest);
 
-                    await _context
-                        .SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ServiceRequestExists(
-                        serviceRequest.RequestId))
-                    {
-                        return NotFound();
-                    }
+                await _context.SaveChangesAsync();
 
-                    throw;
-                }
-
-                return RedirectToAction(
-                    nameof(Index));
+                return RedirectToAction(nameof(Index));
             }
 
             return View(serviceRequest);
         }
 
 
-        // ==========================================
+        // ===============================
         // DELETE GET
-        // ==========================================
+        // ===============================
         [HttpGet]
         public async Task<IActionResult> Delete(
             int? requestId)
@@ -388,99 +304,9 @@ namespace StudentServiceRequestSystem1.Controllers
                 return NotFound();
             }
 
-            var serviceRequest =
-                await _context.ServiceRequests
-                .FirstOrDefaultAsync(
-                    r => r.RequestId == requestId);
-
-            if (serviceRequest == null)
-            {
-                return NotFound();
-            }
-
-            string? role =
-                HttpContext.Session.GetString("Role");
-
-            if (role != "Staff")
-            {
-                int? studentId =
-                    GetLoggedInStudentId();
-
-                if (studentId == null ||
-                    serviceRequest.StudentId != studentId.Value)
-                {
-                    return RedirectToAction("Index");
-                }
-            }
-
-            return View(serviceRequest);
-        }
-
-
-        // ==========================================
-        // DELETE POST
-        // ==========================================
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult>
-            DeleteConfirmed(int requestId)
-        {
-            var serviceRequest =
-                await _context.ServiceRequests
-                .FindAsync(requestId);
-
-            if (serviceRequest == null)
-            {
-                return RedirectToAction(
-                    nameof(Index));
-            }
-
-            string? role =
-                HttpContext.Session.GetString("Role");
-
-            if (role != "Staff")
-            {
-                int? studentId =
-                    GetLoggedInStudentId();
-
-                if (studentId == null ||
-                    serviceRequest.StudentId != studentId.Value)
-                {
-                    return RedirectToAction("Index");
-                }
-            }
-
-            _context.ServiceRequests
-                .Remove(serviceRequest);
-
-            await _context
-                .SaveChangesAsync();
-
-            return RedirectToAction(
-                nameof(Index));
-        }
-
-
-        // ==========================================
-        // STAFF UPDATE STATUS GET
-        // ==========================================
-        [HttpGet]
-        public async Task<IActionResult> UpdateStatus(
-            int requestId)
-        {
-            string? role =
-                HttpContext.Session.GetString("Role");
-
-            if (role != "Staff")
-            {
-                return RedirectToAction(
-                    "Login",
-                    "Account");
-            }
-
-            var request =
-                await _context.ServiceRequests
-                .FindAsync(requestId);
+            var request = await _context.ServiceRequests
+                .FirstOrDefaultAsync(x =>
+                    x.RequestId == requestId);
 
             if (request == null)
             {
@@ -491,9 +317,33 @@ namespace StudentServiceRequestSystem1.Controllers
         }
 
 
-        // ==========================================
-        // STAFF UPDATE STATUS POST
-        // ==========================================
+        // ===============================
+        // DELETE POST
+        // ===============================
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult>
+            DeleteConfirmed(int requestId)
+        {
+            var request =
+                await _context.ServiceRequests
+                .FindAsync(requestId);
+
+            if (request != null)
+            {
+                _context.ServiceRequests.Remove(request);
+
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+
+        // ===============================
+        // STAFF STATUS UPDATE
+        // Figure 6
+        // ===============================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateStatus(
@@ -505,9 +355,7 @@ namespace StudentServiceRequestSystem1.Controllers
 
             if (role != "Staff")
             {
-                return RedirectToAction(
-                    "Login",
-                    "Account");
+                return RedirectToAction("Login", "Account");
             }
 
             var request =
@@ -519,31 +367,32 @@ namespace StudentServiceRequestSystem1.Controllers
                 return NotFound();
             }
 
+            string[] allowedStatuses =
+            {
+                "Pending",
+                "Processing",
+                "Completed",
+                "Rejected"
+            };
+
+            if (!allowedStatuses.Contains(status))
+            {
+                return RedirectToAction(
+                    "Details",
+                    new { requestId });
+            }
+
             request.Status = status;
+            request.UpdatedDate = DateTime.Now;
 
-            request.UpdatedDate =
-                DateTime.Now;
-
-            await _context
-                .SaveChangesAsync();
+            await _context.SaveChangesAsync();
 
             TempData["Success"] =
                 "Request status updated successfully.";
 
             return RedirectToAction(
-                "StaffDashboard",
-                "Account");
-        }
-
-
-        // ==========================================
-        // EXISTS
-        // ==========================================
-        private bool ServiceRequestExists(
-            int id)
-        {
-            return _context.ServiceRequests
-                .Any(e => e.RequestId == id);
+                "Details",
+                new { requestId });
         }
     }
 }

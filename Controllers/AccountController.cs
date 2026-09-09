@@ -14,14 +14,18 @@ namespace StudentServiceRequestSystem1.Controllers
             _context = context;
         }
 
+        // =====================================
         // REGISTER PAGE
+        // =====================================
         [HttpGet]
         public IActionResult Register()
         {
             return View();
         }
 
+        // =====================================
         // REGISTER POST
+        // =====================================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(User user)
@@ -60,14 +64,18 @@ namespace StudentServiceRequestSystem1.Controllers
             return RedirectToAction("Login");
         }
 
+        // =====================================
         // LOGIN PAGE
+        // =====================================
         [HttpGet]
         public IActionResult Login()
         {
             return View();
         }
 
+        // =====================================
         // LOGIN POST
+        // =====================================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(
@@ -85,26 +93,50 @@ namespace StudentServiceRequestSystem1.Controllers
                 return View();
             }
 
-            HttpContext.Session.SetInt32("UserId", user.UserId);
-            HttpContext.Session.SetString("StudentId", user.StudentId);
-            HttpContext.Session.SetString("UserName", user.Name);
-            HttpContext.Session.SetString("Role", user.Role);
+            HttpContext.Session.SetInt32(
+                "UserId",
+                user.UserId);
 
+            HttpContext.Session.SetString(
+                "StudentId",
+                user.StudentId);
+
+            HttpContext.Session.SetString(
+                "UserName",
+                user.Name);
+
+            HttpContext.Session.SetString(
+                "Role",
+                user.Role);
+
+            // Staff goes to Staff Dashboard
             if (user.Role == "Staff")
             {
                 return RedirectToAction("StaffDashboard");
             }
 
+            // Student goes to Student Dashboard
             return RedirectToAction("Dashboard");
         }
 
-        // DASHBOARD
+        // =====================================
+        // STUDENT DASHBOARD
+        // =====================================
         [HttpGet]
         public IActionResult Dashboard()
         {
             if (HttpContext.Session.GetInt32("UserId") == null)
             {
                 return RedirectToAction("Login");
+            }
+
+            var role =
+                HttpContext.Session.GetString("Role");
+
+            // Staff should not use student dashboard
+            if (role == "Staff")
+            {
+                return RedirectToAction("StaffDashboard");
             }
 
             ViewBag.UserName =
@@ -115,51 +147,61 @@ namespace StudentServiceRequestSystem1.Controllers
 
             return View();
         }
+
         // =====================================
-// STAFF DASHBOARD
-// =====================================
-public async Task<IActionResult> StaffDashboard()
-{
-    var userId =
-        HttpContext.Session.GetInt32("UserId");
+        // STAFF DASHBOARD
+        // =====================================
+        [HttpGet]
+        public async Task<IActionResult> StaffDashboard()
+        {
+            var userId =
+                HttpContext.Session.GetInt32("UserId");
 
-    var role =
-        HttpContext.Session.GetString("Role");
+            var role =
+                HttpContext.Session.GetString("Role");
 
-    if (userId == null)
-    {
-        return RedirectToAction("Login");
-    }
+            if (userId == null)
+            {
+                return RedirectToAction("Login");
+            }
 
-    if (role != "Staff")
-    {
-        return RedirectToAction("Dashboard");
-    }
+            if (role != "Staff")
+            {
+                return RedirectToAction("Dashboard");
+            }
 
-    var requests =
-        await _context.ServiceRequests
-        .OrderByDescending(r => r.CreatedDate)
-        .ToListAsync();
+            var requests = await _context.ServiceRequests
+                .OrderByDescending(x => x.CreatedDate)
+                .ToListAsync();
 
-    ViewBag.TotalRequests =
-        requests.Count;
+            ViewBag.UserName =
+                HttpContext.Session.GetString("UserName");
 
-    ViewBag.PendingRequests =
-        requests.Count(r => r.Status == "Pending");
+            ViewBag.Total =
+                requests.Count;
 
-    ViewBag.InProgressRequests =
-        requests.Count(r => r.Status == "In Progress");
+            ViewBag.Pending =
+                requests.Count(x =>
+                    x.Status == "Pending");
 
-    ViewBag.CompletedRequests =
-        requests.Count(r => r.Status == "Completed");
+            ViewBag.Processing =
+                requests.Count(x =>
+                    x.Status == "Processing");
 
-    ViewBag.UserName =
-        HttpContext.Session.GetString("UserName");
+            ViewBag.Completed =
+                requests.Count(x =>
+                    x.Status == "Completed");
 
-    return View(requests);
-}
+            ViewBag.Rejected =
+                requests.Count(x =>
+                    x.Status == "Rejected");
 
+            return View(requests);
+        }
+
+        // =====================================
         // LOGOUT
+        // =====================================
         public IActionResult Logout()
         {
             HttpContext.Session.Clear();

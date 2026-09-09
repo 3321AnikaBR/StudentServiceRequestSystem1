@@ -7,15 +7,15 @@ namespace StudentServiceRequestSystem.Models
         [Key]
         public int RequestId { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Student ID is required.")]
+        [Display(Name = "Student ID")]
         public int StudentId { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Request Type is required.")]
         [Display(Name = "Request Type")]
         public string RequestType { get; set; } = string.Empty;
 
-        [Required]
-        [StringLength(500)]
+        [Required(ErrorMessage = "Description is required.")]
         public string Description { get; set; } = string.Empty;
 
         public string Status { get; set; } = "Pending";
@@ -24,6 +24,6 @@ namespace StudentServiceRequestSystem.Models
         public DateTime CreatedDate { get; set; } = DateTime.Now;
 
         [Display(Name = "Updated Date")]
-        public DateTime? UpdatedDate { get; set; }
+        public DateTime UpdatedDate { get; set; } = DateTime.Now;
     }
 }
