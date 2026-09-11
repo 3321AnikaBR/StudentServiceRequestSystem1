@@ -1113,3 +1113,30 @@ main {
         color: #075b39;
         font-weight: 700;
     }
+/* ================================
+   STAFF DASHBOARD BACKGROUND
+================================ */
+
+.staff-page-bg {
+    min-height: 100vh;
+    background-image: linear-gradient( rgba(0, 60, 35, 0.55), rgba(0, 40, 25, 0.65) ), url('/images/staff-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    padding-bottom: 60px;
+}
+
+    .staff-page-bg h1 {
+        color: white !important;
+    }
+
+    .staff-page-bg .text-center > p {
+        color: white;
+        font-size: 17px;
+    }
+
+    .staff-page-bg .card {
+        background: rgba(255, 255, 255, 0.94);
+        border-radius: 15px;
+    }

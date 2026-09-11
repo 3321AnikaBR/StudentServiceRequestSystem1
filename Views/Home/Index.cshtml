@@ -6,6 +6,7 @@
 
     <div class="home-wrapper">
 
+        <!-- HERO SECTION -->
         <section class="home-hero">
 
             <div>
@@ -39,6 +40,7 @@
         </section>
 
 
+        <!-- SERVICES SECTION -->
         <section class="services-box">
 
             <h2>Student Services</h2>
@@ -49,7 +51,9 @@
 
             <div class="row mt-4 g-4">
 
-                <div class="col-md-4">
+
+                <!-- CREATE REQUEST -->
+                <div class="col-md-6">
 
                     <div class="service-card">
 
@@ -70,7 +74,8 @@
                 </div>
 
 
-                <div class="col-md-4">
+                <!-- MY REQUESTS -->
+                <div class="col-md-6">
 
                     <div class="service-card">
 
@@ -91,7 +96,8 @@
                 </div>
 
 
-                <div class="col-md-4">
+                <!-- STUDENT ACCOUNT -->
+                <div class="col-md-6">
 
                     <div class="service-card">
 
@@ -110,6 +116,29 @@
                     </div>
 
                 </div>
+
+
+                <!-- STAFF DASHBOARD -->
+                <div class="col-md-6">
+
+                    <div class="service-card">
+
+                        <h3>👨‍💼 Staff Dashboard</h3>
+
+                        <p>
+                            Manage student requests and update their status.
+                        </p>
+
+                        <a asp-controller="Staff"
+                           asp-action="Index"
+                           class="btn btn-success">
+                            Staff Dashboard
+                        </a>
+
+                    </div>
+
+                </div>
+
 
             </div>
 

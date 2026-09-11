@@ -1,0 +1,103 @@
+﻿@model IEnumerable<StudentServiceRequestSystem.Models.ServiceRequest>
+
+@{
+    ViewData["Title"] = "Staff Dashboard";
+}
+
+<div class="staff-page-bg">
+
+    <div class="container staff-dashboard-container">
+
+        <div class="text-center mb-4 staff-heading">
+            <h1 class="fw-bold">Staff Dashboard</h1>
+            <p>Manage all student service requests</p>
+        </div>
+
+        <div class="card shadow p-4 staff-request-card">
+
+            <h3 class="mb-4">All Service Requests</h3>
+
+            <div class="table-responsive">
+
+                <table class="table table-bordered table-hover text-center">
+
+                    <thead class="table-success">
+                        <tr>
+                            <th>ID</th>
+                            <th>Student ID</th>
+                            <th>Request Type</th>
+                            <th>Description</th>
+                            <th>Status</th>
+                            <th>Created Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+
+                                <td>@item.RequestId</td>
+
+                                <td>@item.StudentId</td>
+
+                                <td>@item.RequestType</td>
+
+                                <td>@item.Description</td>
+
+                                <td>
+                                    @if (item.Status == "Completed")
+                                    {
+                                        <span class="badge bg-success">
+                                            Completed
+                                        </span>
+                                    }
+                                    else if (item.Status == "Processing")
+                                    {
+                                        <span class="badge bg-primary">
+                                            Processing
+                                        </span>
+                                    }
+                                    else if (item.Status == "Rejected")
+                                    {
+                                        <span class="badge bg-danger">
+                                            Rejected
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning text-dark">
+                                            Pending
+                                        </span>
+                                    }
+                                </td>
+
+                                <td>
+                                    @item.CreatedDate.ToString("dd-MM-yyyy")
+                                </td>
+
+                                <td>
+                                    <a asp-controller="Staff"
+                                       asp-action="Details"
+                                       asp-route-id="@item.RequestId"
+                                       class="btn btn-success btn-sm">
+                                        View / Update
+                                    </a>
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

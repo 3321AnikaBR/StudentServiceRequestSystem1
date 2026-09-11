@@ -1,0 +1,86 @@
+﻿@model StudentServiceRequestSystem.Models.ServiceRequest
+
+@{
+    ViewData["Title"] = "Request Details";
+}
+
+<div class="container mt-5">
+
+    <div class="card shadow p-4">
+
+        <h2 class="text-success mb-4">Request Details</h2>
+
+        <table class="table table-bordered">
+
+            <tr>
+                <th>Request ID</th>
+                <td>@Model.RequestId</td>
+            </tr>
+
+            <tr>
+                <th>Student ID</th>
+                <td>@Model.StudentId</td>
+            </tr>
+
+            <tr>
+                <th>Request Type</th>
+                <td>@Model.RequestType</td>
+            </tr>
+
+            <tr>
+                <th>Description</th>
+                <td>@Model.Description</td>
+            </tr>
+
+            <tr>
+                <th>Current Status</th>
+                <td>@Model.Status</td>
+            </tr>
+
+        </table>
+
+        <h4 class="text-success mt-4">Update Status</h4>
+
+        <form asp-controller="Staff"
+              asp-action="UpdateStatus"
+              method="post">
+
+            @Html.AntiForgeryToken()
+
+            <input type="hidden"
+                   name="requestId"
+                   value="@Model.RequestId" />
+
+            <div class="mb-3">
+
+                <label class="form-label">Select Status</label>
+
+                <select name="status"
+                        class="form-select"
+                        required>
+
+                    <option value="Pending">Pending</option>
+                    <option value="Processing">Processing</option>
+                    <option value="Completed">Completed</option>
+                    <option value="Rejected">Rejected</option>
+
+                </select>
+
+            </div>
+
+            <button type="submit"
+                    class="btn btn-success">
+                Update Status
+            </button>
+
+            <a asp-controller="Staff"
+               asp-action="Index"
+               class="btn btn-secondary">
+                Back
+            </a>
+
+        </form>
+
+    </div>
+
+</div>
